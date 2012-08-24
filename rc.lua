@@ -132,6 +132,9 @@ awful.rules.rules = {
     --   properties = { tag = tags[1][2] } },
     { rule = { instance = "plugin-container" },
         properties = { floating = true } },
+    { rule = { name = "File Operation Progress" },
+      properties = { },
+      callback = awful.client.setslave }
 }
 -- }}}
 
