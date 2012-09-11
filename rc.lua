@@ -4,6 +4,8 @@ require("awful.autofocus")
 require("awful.rules")
 -- Theme handling library
 require("beautiful")
+-- Widgets Extra Library
+vicious = require("vicious")
 -- Notification library
 require("naughty")
 --Expos\`e like effect
@@ -49,7 +51,7 @@ local exec = awful.util.spawn
 local sexec = awful.util.spawn_with_shell
 
 -- This is used later as the default terminal and editor to run.
-terminal = "gnome-terminal"
+terminal = "lxterminal"
 editor = os.getenv("EDITOR") or "nano"
 editor_cmd = terminal .. " -e " .. editor
 

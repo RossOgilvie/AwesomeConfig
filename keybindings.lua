@@ -5,7 +5,7 @@ local maxtag = 3
 globalkeys = awful.util.table.join(
 --FOCUS
 keydoc.group("Focus",1),
--- Left/Right -- Focus Position
+-- Focus Position
 awful.key({ modkey }, "Left", function ()
 	awful.client.focus.byidx(-1)
 	if client.focus then client.focus:raise() end end, "Focus Previous Window"),
@@ -13,11 +13,11 @@ awful.key({ modkey }, "Right", function ()
 	awful.client.focus.byidx( 1)
 	if client.focus then client.focus:raise() end end, "Focus Next Window"),
 
--- Prior/Next -- Focus Tags
+-- Focus Tags
 awful.key({ modkey,    }, "Prior", awful.tag.viewprev, "Focus Previous Tag"),
 awful.key({ modkey,    }, "Next", awful.tag.viewnext, "Focus Next Tag"),    
 
--- Home/End -- Focus Screens
+-- Focus Screens
 awful.key({ modkey,  }, "Home", function () awful.screen.focus_relative(-1) end, "Focus Previous Screen"),
 awful.key({ modkey,  }, "End", function () awful.screen.focus_relative(1) end, "Focus Next Screen"),
 
@@ -45,34 +45,38 @@ keydoc.group("Awesome"),
 -------------------
 clientkeys = awful.util.table.join(
 keydoc.group("Move",2),
--- +Left/+Right -- Move Position
-awful.key({ modkey, "Shift"   }, "Left", function () awful.client.swap.byidx( -1)    end,
+-- MOVE WINDOWS
+-- Move Position
+awful.key({ modkey, "Control"   }, "Left", function () awful.client.swap.byidx( -1)    end,
 	"Swap with the previous window"),
-awful.key({ modkey, "Shift"   }, "Right", function () awful.client.swap.byidx(  1)    end,
+awful.key({ modkey, "Control"   }, "Right", function () awful.client.swap.byidx(  1)    end,
 	"Swap with the next window"),
 
--- +Prior/+Next -- Move Tags
-awful.key({ modkey, "Shift" }, "Prior", function (c)
+-- Move Tags
+-- By default this didn't change tags, but to make it consistent I've made it that way
+awful.key({ modkey, "Control" }, "Prior", function (c)
 	local curidx = awful.tag.getidx(c:tags()[1])
         if awful.tag.getidx(c:tags()[1]) == 1 then
 		awful.client.movetotag(screen[c.screen]:tags()[maxtag],c)
         else
 		awful.client.movetotag(screen[c.screen]:tags()[curidx - 1],c)
         end
+        awful.tag.viewprev(screen[c.screen])
     end,
 	"Move to the previous tag"),
-awful.key({ modkey, "Shift" }, "Next", function (c)
+awful.key({ modkey, "Control" }, "Next", function (c)
         local curidx = awful.tag.getidx(c:tags()[1])
         if curidx == maxtag then
 		awful.client.movetotag(screen[c.screen]:tags()[1],c)
         else
 		awful.client.movetotag(screen[c.screen]:tags()[curidx + 1],c)
         end
+        awful.tag.viewnext(screen[c.screen])
     end,
 	"Move to the next tag"),
  
--- +Home/+End -- Move Screens
-awful.key({ modkey, "Shift" }, "Home", function (c)
+-- Move Screens
+awful.key({ modkey, "Control" }, "Home", function (c)
 	local sidx = c.screen
         if sidx == 1 then
 		awful.client.movetoscreen(c, screen.count())
@@ -81,7 +85,7 @@ awful.key({ modkey, "Shift" }, "Home", function (c)
         end
     end,
 	"Move to the previous screen"),
-awful.key({ modkey, "Shift" }, "End", function (c)
+awful.key({ modkey, "Control" }, "End", function (c)
 	local sidx = c.screen
         if sidx == screen.count() then
 		awful.client.movetoscreen(c, 1)
