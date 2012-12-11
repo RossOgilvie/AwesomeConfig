@@ -8,10 +8,10 @@ require("beautiful")
 vicious = require("vicious")
 -- Notification library
 require("naughty")
---Expos\`e like effect
-require("revelation")
---common set of tags for multiple screens
-require("sharetags")
+--minor dynamic tagging library
+require("eminent")
+--custom tasklist
+require("ross.widget.tasklist")
 
 ------------------------
 -- {{{ Error handling
@@ -44,7 +44,7 @@ end
 -- {{{ Variable definitions
 ---------------------------
 -- Themes define colours, icons, and wallpapers
-beautiful.init("/home/ross/.config/awesome/themes/zenburn/theme.lua")
+beautiful.init("/home/ross/.config/awesome/themes/ross/theme.lua")
 -- {{{ Variable definitions
 local home = os.getenv("HOME")
 local exec = awful.util.spawn
@@ -88,7 +88,7 @@ tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
 --    tags[s] = awful.tag({ 1, 2, 3 }, s, layouts[1])
-    tags[s] = awful.tag({ "α", "β", "γ" }, s, layouts[1])
+    tags[s] = awful.tag({ "α", "β", "γ", "δ", "ε", "ζ" }, s, layouts[1])
 end
 -- }}}
 
@@ -119,6 +119,7 @@ awful.rules.rules = {
       properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
                      focus = true,
+                     --size_hints_honor = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
     { rule = { class = "Kupfer.py" },
@@ -159,7 +160,7 @@ client.add_signal("manage", function (c, startup)
     if not startup then
         -- Set the windows at the slave,
         -- i.e. put it at the end of others instead of setting it master.
-        -- awful.client.setslave(c)
+        --awful.client.setslave(c)
 
         -- Put windows in a smart way, only if they does not set an initial position.
         if not c.size_hints.user_position and not c.size_hints.program_position then
@@ -172,8 +173,3 @@ end)
 client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
-
---refresh volume
-mytimer = timer({ timeout = 5 })
-mytimer:add_signal("timeout", function() volumecfg.update() end)
-mytimer:start()

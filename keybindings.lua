@@ -1,6 +1,6 @@
 local keydoc = require("keydoc")
 --What's the last tag or screen?
-local maxtag = 3
+local maxtag = 6
 
 globalkeys = awful.util.table.join(
 --FOCUS
@@ -23,8 +23,6 @@ awful.key({ modkey,  }, "End", function () awful.screen.focus_relative(1) end, "
 
 
 keydoc.group("Layout Control",4),
-    awful.key({ modkey }, "m", revelation, "Revelation"),
-
     awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end,
 	"Increase master width"),
     awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end,
@@ -145,24 +143,30 @@ for i = 1, keynumber do
                   end),
         awful.key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
-                      local screen = mouse.screen
-                      if tags[screen][i] then
-                          awful.tag.viewtoggle(tags[screen][i])
-                      end
-                  end),
-        awful.key({ modkey, "Shift" }, "#" .. i + 9,
-                  function ()
                       if client.focus and tags[client.focus.screen][i] then
                           awful.client.movetotag(tags[client.focus.screen][i])
                       end
-                  end),
-        awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
-                  function ()
-                      if client.focus and tags[client.focus.screen][i] then
-                          awful.client.toggletag(tags[client.focus.screen][i])
-                      end
-                  end))
-end
+                  end)
+        --awful.key({ modkey, "Control" }, "#" .. i + 9,
+                  --function ()
+                      --local screen = mouse.screen
+                      --if tags[screen][i] then
+                          --awful.tag.viewtoggle(tags[screen][i])
+                      --end
+                  --end),
+        --awful.key({ modkey, "Shift" }, "#" .. i + 9,
+                  --function ()
+                      --if client.focus and tags[client.focus.screen][i] then
+                          --awful.client.movetotag(tags[client.focus.screen][i])
+                      --end
+                  --end),
+        --awful.key({ modkey, "Control", "Shift" }, "#" .. i + 9,
+                  --function ()
+                      --if client.focus and tags[client.focus.screen][i] then
+                          --awful.client.toggletag(tags[client.focus.screen][i])
+                      --end
+                  --end)
+)end
 
 clientbuttons = awful.util.table.join(
     awful.button({ }, 1, function (c) client.focus = c; c:raise() end),

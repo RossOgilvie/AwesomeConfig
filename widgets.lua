@@ -8,6 +8,7 @@ volumecfg.widget = widget({ type = "textbox", name = "volumecfg.widget", align =
 -- command must start with a space!
 volumecfg.mixercommand = function (command)
        local fd = io.popen("amixer -c " .. volumecfg.cardid .. command)
+       if(fd ~= nil) then volumecfg.widget.text = "??" end
        local status = fd:read("*all")
        fd:close()
        local volume = string.match(status, "(%d?%d?%d)%%")
@@ -49,6 +50,11 @@ volumecfg.widget:buttons(awful.util.table.join(
 ))
 volumecfg.update()
 
+--refresh volume
+mytimer = timer({ timeout = 2 })
+mytimer:add_signal("timeout", function() volumecfg.update() end)
+mytimer:start()
+
 -- {{{ Menu
 -- Create a laucher widget and a main menu
 mymainmenu = awful.menu({ items = {
@@ -58,7 +64,7 @@ mymainmenu = awful.menu({ items = {
    { "restart awm", awesome.restart },
    { "quit", awesome.quit },
    { "restart", terminal .. " -e reboot"},
-   { "shutdown", terminal .. "-e halt"}
+   { "shutdown", "systemctl poweroff"}
                                   }
                         })
 -- }}}
@@ -69,7 +75,7 @@ mymainmenu = awful.menu({ items = {
 -- Initialize widget
 datewidget = widget({ type = "textbox" })
 -- Register widget
-vicious.register(datewidget, vicious.widgets.date, " %a %b %d, %R", 59)
+vicious.register(datewidget, vicious.widgets.date, " %a %b %d, %R", 19)
 
 ----------
 -- Battery
@@ -111,48 +117,36 @@ mytaglist.buttons = awful.util.table.join(
                     
 mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
-                     awful.button({ }, 1, function (c)
-                                              if c == client.focus then
-                                                  c.minimized = true
-                                              else
-                                                  if not c:isvisible() then
-                                                      awful.tag.viewonly(c:tags()[1])
-                                                  end
-                                                  -- This will also un-minimize
-                                                  -- the client, if needed
-                                                  client.focus = c
-                                                  c:raise()
-                                              end
-                                          end),
-                     awful.button({ }, 4, function ()
-                                              awful.client.focus.byidx(1)
-                                              if client.focus then client.focus:raise() end
-                                          end),
-                     awful.button({ }, 5, function ()
-                                              awful.client.focus.byidx(-1)
-                                              if client.focus then client.focus:raise() end
-                                          end))
+	awful.button({ }, 1, function (c)
+		if c == client.focus then
+			c.minimized = true
+		else
+			if not c:isvisible() then
+				awful.tag.viewonly(c:tags()[1])
+			end
+			-- This will also un-minimize the client, if needed
+			client.focus = c
+			c:raise()
+		end end),
+	awful.button({ }, 4, function ()
+		awful.client.focus.byidx(1)
+		if client.focus then client.focus:raise() end end),
+	awful.button({ }, 5, function ()
+		awful.client.focus.byidx(-1)
+		if client.focus then client.focus:raise() end end))
 
 for s = 1, screen.count() do
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
     mylayoutbox[s] = awful.widget.layoutbox(s)
-    mylayoutbox[s]:buttons(awful.util.table.join(
-----                           awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
-                             awful.button({ }, 1, function() awful.menu.toggle(mymainmenu) end)
-----                           awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
-----                           awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
-----                           awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)
-                           ))
+    mylayoutbox[s]:buttons(awful.util.table.join(awful.button({ }, 1, function() awful.menu.toggle(mymainmenu) end)))
     -- Create a taglist widget
     mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
     --try a unified tag table
 --    mytaglist[s] = sharetags.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
 
     -- Create a tasklist widget
-    mytasklist[s] = awful.widget.tasklist(function(c)
-                                              return awful.widget.tasklist.label.currenttags(c, s)
-                                          end, mytasklist.buttons)
+    mytasklist[s] = ross.widget.tasklist(function(c) return ross.widget.tasklist.label.alltags(c, s) end, mytasklist.buttons)
 
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s })
