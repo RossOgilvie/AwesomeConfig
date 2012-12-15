@@ -46,9 +46,8 @@ end
 -- Themes define colours, icons, and wallpapers
 beautiful.init("/home/ross/.config/awesome/themes/ross/theme.lua")
 -- {{{ Variable definitions
-local home = os.getenv("HOME")
-local exec = awful.util.spawn
-local sexec = awful.util.spawn_with_shell
+home = os.getenv("HOME")
+exec = awful.util.spawn
 
 -- This is used later as the default terminal and editor to run.
 terminal = "lxterminal"
@@ -138,6 +137,11 @@ awful.rules.rules = {
     { rule = { name = "File Operation Progress" },
       properties = { },
       callback = awful.client.setslave }
+    --{ rule = { class = "Avant-window-navigator" },
+		--properties = { hidden = true },
+		--callback = function(c) c:add_signal("unfocus", function(d)
+		--d.hidden = true
+		--end) end }
 }
 -- }}}
 

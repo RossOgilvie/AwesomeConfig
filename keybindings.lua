@@ -35,7 +35,7 @@ keydoc.group("Layout Control",4),
 keydoc.group("Awesome"),
     awful.key({ modkey, "Control" }, "r", awesome.restart, "Restart Awesome"),
     awful.key({ modkey, "Control"   }, "q", awesome.quit, "Quit Awesome"),
-    awful.key({modkey}, "F1", keydoc.display, "Display Help")
+    awful.key({modkey}, "/", keydoc.display, "Display Help")
 )
 
 -------------------

@@ -8,7 +8,7 @@
 
 -- {{{ Main
 theme = {}
-theme.wallpaper_cmd = { "awsetbg -f /home/ross/pictures/Wallpaper/Good/EndCredits2560x1600-16bit.png" }
+theme.wallpaper_cmd = { "/home/ross/.scripts/screens wallpaper" }
 theme.rootdir = "/home/ross/.config/awesome/themes/ross/"
 -- }}}
 
@@ -132,5 +132,17 @@ theme.tasklist_floating_icon_inactive = theme.rootdir .. "tasklist/ontop_focus_i
 theme.tasklist_maximised_icon_active = theme.rootdir .. "tasklist/floating_focus_active.png"
 theme.tasklist_maximised_icon_inactive = theme.rootdir .. "tasklist/floating_focus_inactive.png"
 --}}}
+
+-- WIFI
+theme.wifi_excellent = theme.rootdir .. "icons/network-wireless-signal-excellent-symbolic.png"
+theme.wifi_good = theme.rootdir .. "icons/network-wireless-signal-good-symbolic.png"
+theme.wifi_ok = theme.rootdir .. "icons/network-wireless-signal-ok-symbolic.png"
+theme.wifi_weak = theme.rootdir .. "icons/network-wireless-signal-weak-symbolic.png"
+theme.wifi_none = theme.rootdir .. "icons/network-wireless-signal-none-symbolic.png"
+theme.wired = theme.rootdir .. "icons/network-wired.png"
+
+-- Arch
+theme.archlinux = theme.rootdir .. "icons/archlinux.png"
+
 
 return theme
