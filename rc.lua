@@ -1,22 +1,23 @@
 -- Standard awesome library
-require("awful")
+gears = require("gears")
+awful = require("awful")
+awful.rules = require("awful.rules")
 require("awful.autofocus")
-require("awful.rules")
+-- Widget and layout library
+wibox = require("wibox")
+menubar = require("menubar")
 -- Theme handling library
-require("beautiful")
+beautiful = require("beautiful")
+-- Notification library
+naughty = require("naughty")
 -- Widgets Extra Library
 vicious = require("vicious")
--- Notification library
-require("naughty")
---minor dynamic tagging library
-require("eminent")
+--eminent = require("eminent")
 --custom tasklist
-require("ross.widget.tasklist")
+--ross.widget.tasklist = require("ross.widget.tasklist")
 
-------------------------
 -- {{{ Error handling
-------------------------
--- Check if awesome encountered	 an error during startup and fell back to
+-- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
 if awesome.startup_errors then
     naughty.notify({ preset = naughty.config.presets.critical,
@@ -27,7 +28,7 @@ end
 -- Handle runtime errors after startup
 do
     local in_error = false
-    awesome.add_signal("debug::error", function (err)
+    awesome.connect_signal("debug::error", function (err)
         -- Make sure we don't go into an endless error loop
         if in_error then return end
         in_error = true
@@ -77,6 +78,12 @@ layouts =
 --    awful.layout.suit.max.fullscreen,
 --    awful.layout.suit.magnifier
 }
+-- }}}
+
+-- {{{ Wallpaper
+if beautiful.wallpaper_cmd then
+	io.popen(beautiful.wallpaper_cmd)
+end
 -- }}}
 
 ------------------------
@@ -139,7 +146,7 @@ awful.rules.rules = {
       callback = awful.client.setslave }
     --{ rule = { class = "Avant-window-navigator" },
 		--properties = { hidden = true },
-		--callback = function(c) c:add_signal("unfocus", function(d)
+		--callback = function(c) c:connect_signal("unfocus", function(d)
 		--d.hidden = true
 		--end) end }
 }
@@ -149,12 +156,12 @@ awful.rules.rules = {
 -- {{{ Signals
 -----------------------
 -- Signal function to execute when a new client appears.
-client.add_signal("manage", function (c, startup)
+client.connect_signal("manage", function (c, startup)
     -- Add a titlebar
     -- awful.titlebar.add(c, { modkey = modkey })
 
     -- Enable sloppy focus
---    c:add_signal("mouse::enter", function(c)
+--    c:connect_signal("mouse::enter", function(c)
 --        if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
 --            and awful.client.focus.filter(c) then
 --            client.focus = c
@@ -174,6 +181,6 @@ client.add_signal("manage", function (c, startup)
     end
 end)
 
-client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
-client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}

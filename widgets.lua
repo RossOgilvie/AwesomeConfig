@@ -17,7 +17,8 @@ volumecfg = {}
 volumecfg.cardid  = 0
 volumecfg.channel = "Master"
 local muted = false
-volumecfg.widget = widget({ type = "textbox", name = "volumecfg.widget", align = "right" })
+volumecfg.widget = wibox.widget.textbox()
+volumecfg.widget:set_align("right")
 -- command must start with a space!
 volumecfg.mixercommand = function (command)
        local fd = io.popen("amixer -c " .. volumecfg.cardid .. command)
@@ -34,7 +35,7 @@ volumecfg.mixercommand = function (command)
                volume = volume .. "M"
                muted = true
        end
-       volumecfg.widget.text = volume
+       volumecfg.widget:set_text(volume)
 end
 volumecfg.update = function ()
        volumecfg.mixercommand(" sget " .. volumecfg.channel)
@@ -64,15 +65,15 @@ volumecfg.widget:buttons(awful.util.table.join(
 volumecfg.update()
 
 --refresh volume
-mytimer = timer({ timeout = 2 })
-mytimer:add_signal("timeout", function() volumecfg.update() end)
-mytimer:start()
+voltimer = timer({ timeout = 2 })
+voltimer:connect_signal("timeout", function() volumecfg.update() end)
+voltimer:start()
 
 ----------
 -- Clock
 ----------
 -- Initialize widget
-datewidget = widget({ type = "textbox" })
+datewidget = wibox.widget.textbox()
 -- Register widget
 vicious.register(datewidget, vicious.widgets.date, " %a %b %d, %R", 19)
 
@@ -81,19 +82,20 @@ vicious.register(datewidget, vicious.widgets.date, " %a %b %d, %R", 19)
 ----------
 battery = require("ross.widget.battery")
 
-batterywidget = widget({type = "textbox", name = "batterywidget", align = "right" })
+batterywidget = wibox.widget.textbox()
+batterywidget:set_align("right")
 
 bat_clo = battery.batclosure("BAT1")
 batterywidget.text = bat_clo()
 battimer = timer({ timeout = 30 })
-battimer:add_signal("timeout", function() batterywidget.text = bat_clo() end)
+battimer:connect_signal("timeout", function() batterywidget:set_text(bat_clo()) end)
 battimer:start()
 
 
 -- WIFI
 wifi =
 {
-	widget = widget({ type = "imagebox" }),
+	widget = wibox.widget.imagebox(),
 	margins = { left = 4, right = 4 },
 	resize = false,
 	vicious = vicious.widgets.wifi,
@@ -101,15 +103,7 @@ wifi =
 	timeout = 31,
 	ssid = "N/A",
 	rate = 0,
-	link = 0,
-	imgs = {
-		image(beautiful.wifi_none),
-		image(beautiful.wifi_weak),
-		image(beautiful.wifi_ok),
-		image(beautiful.wifi_good),
-		image(beautiful.wifi_excellent),
-		image(beautiful.wired)
-		}
+	link = 0
 }
 wifi.callback = function(widget, args)
   wifi.ssid = args["{ssid}"]
@@ -121,18 +115,18 @@ wifi.callback = function(widget, args)
 	local device = fdevice:read()
 	fdevice:close()
 	if device == "eth0" then
-		widget.image = wifi.imgs[6]
+		widget:set_image(beautiful.wired)
 	else
-		widget.image = wifi.imgs[1]
+		widget:set_image(beautiful.wifi_none)
 	end
   elseif wifi.link < 21 then
-    widget.image = wifi.imgs[2]
+    widget:set_image(beautiful.wifi_weak)
   elseif wifi.link < 51 then
-    widget.image = wifi.imgs[3]
+    widget:set_image(beautiful.wifi_ok)
   elseif wifi.link < 91 then
-    widget.image = wifi.imgs[4]
+    widget:set_image(beautiful.wifi_good)
   else
-    widget.image = wifi.imgs[5]
+    widget:set_image(beautiful.wifi_excellent)
   end
 end
 wifi.widget:buttons(awful.util.table.join( awful.button({ }, 1, 
@@ -146,12 +140,12 @@ end
 vicious.register(wifi.widget, wifi.vicious,
                      wifi.format == nil and wifi.callback or wifi.format,
                      wifi.timeout, wifi.args)
-awful.widget.layout.margins[wifi.widget] = wifi.margins
+--awful.widget.layout.margins[wifi.widget] = wifi.margins
 awful.tooltip({ objects = { wifi.widget }, timer_function = wifi.tooltip })
 
 -- TEMP
 therm = {
-	widget = widget({ type = "textbox"}),
+	widget = wibox.widget.textbox(),
 	margins = { left = 4, right = 4 },
 	vicious = vicious.widgets.thermal,
 	args = "thermal_zone0",
@@ -160,20 +154,20 @@ therm = {
 }
 
 vicious.register(therm.widget, therm.vicious, therm.format == nil and therm.callback or therm.format, therm.timeout, therm.args)
-awful.widget.layout.margins[therm.widget] = therm.margins
+--awful.widget.layout.margins[therm.widget] = therm.margins
 
 
  -- {{{ Wibox
 
 -- Create a systray
-mysystray = widget({ type = "systray" })
+-- mysystray = wibox.widget.systray()
 
 -- A Widget box, this is the bar across the top of the screen.
 mywibox = {}
 
 -- An icon of the current window layout
-archlogo = widget({ type = "imagebox" })
-archlogo.image = image(beautiful.archlinux)
+archlogo = wibox.widget.imagebox()
+archlogo:set_image(beautiful.archlinux)
 archlogo:buttons(awful.util.table.join(awful.button({ }, 1, function() awful.menu.toggle(mymainmenu) end)))
 
 -- A list of the tags
@@ -209,40 +203,34 @@ mytasklist.buttons = awful.util.table.join(
 
 for s = 1, screen.count() do
     -- Create a taglist widget
-    mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
-    --try a unified tag table
---    mytaglist[s] = sharetags.taglist(s, awful.widget.taglist.label.all, mytaglist.buttons)
+    mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.all, mytaglist.buttons)
 
     -- Create a tasklist widget
-    mytasklist[s] = ross.widget.tasklist(function(c) return ross.widget.tasklist.label.alltags(c, s) end, mytasklist.buttons)
+    --mytasklist[s] = ross.widget.tasklist(function(c) return ross.widget.tasklist.label.alltags(c, s) end, mytasklist.buttons)
 
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s })
 	-- Add widgets to the wibox - order matters
-	mywibox[s]:add_signal("mouse::enter", function ()
-		for k,c in pairs(client.get()) do
-			if awful.rules.match(c, {class = "Avant-window-navigator"}) then
-				--c.hidden = false
-				--client.focus = c
-				c:raise()
-				end
-			end
-		end)
-	mywibox[s].widgets = {
-		{
-			archlogo,
-            mytaglist[s],
-            layout = awful.widget.layout.horizontal.leftright
-		},
-		datewidget,
-		therm.widget,
-        batterywidget,
-		volumecfg.widget,
-		wifi.widget,
-		netwidget,
-        s == screen.count() and mysystray or nil,
-        --mytasklist[s],
-        layout = awful.widget.layout.horizontal.rightleft
-	}
+	-- Widgets that are aligned to the left
+    local left_layout = wibox.layout.fixed.horizontal()
+    left_layout:add(archlogo)
+    left_layout:add(mytaglist[s])
+
+    -- Widgets that are aligned to the right
+    local right_layout = wibox.layout.fixed.horizontal()
+    --if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(wifi.widget)
+    right_layout:add(volumecfg.widget)
+    right_layout:add(batterywidget)
+    right_layout:add(therm.widget)
+    right_layout:add(datewidget)
+
+    -- Now bring it all together (with the tasklist in the middle)
+    local layout = wibox.layout.align.horizontal()
+    layout:set_left(left_layout)
+    --layout:set_middle(mytasklist[s])
+    layout:set_right(right_layout)
+
+    mywibox[s]:set_widget(layout)
 end
 -- }}}
