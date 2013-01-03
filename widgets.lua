@@ -158,10 +158,6 @@ vicious.register(therm.widget, therm.vicious, therm.format == nil and therm.call
 
 
  -- {{{ Wibox
-
--- Create a systray
--- mysystray = wibox.widget.systray()
-
 -- A Widget box, this is the bar across the top of the screen.
 mywibox = {}
 
@@ -218,7 +214,7 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
-    --if s == 1 then right_layout:add(wibox.widget.systray()) end
+    if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(wifi.widget)
     right_layout:add(volumecfg.widget)
     right_layout:add(batterywidget)

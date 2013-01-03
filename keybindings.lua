@@ -55,21 +55,22 @@ awful.key({ modkey, "Control"   }, "Right", function () awful.client.swap.byidx(
 awful.key({ modkey, "Control" }, "Prior", function (c)
 	local curidx = awful.tag.getidx(c:tags()[1])
         if awful.tag.getidx(c:tags()[1]) == 1 then
-		awful.client.movetotag(screen[c.screen]:tags()[maxtag],c)
+			awful.client.movetotag(tags[c.screen][maxtag],c)
         else
-		awful.client.movetotag(screen[c.screen]:tags()[curidx - 1],c)
+			awful.client.movetotag(tags[c.screen][curidx - 1],c)
         end
-        awful.tag.viewprev(screen[c.screen])
+        awful.tag.viewprev(c.screen)
     end,
 	"Move to the previous tag"),
 awful.key({ modkey, "Control" }, "Next", function (c)
         local curidx = awful.tag.getidx(c:tags()[1])
         if curidx == maxtag then
-		awful.client.movetotag(screen[c.screen]:tags()[1],c)
+			awful.client.movetotag(tags[c.screen][1],c)
         else
-		awful.client.movetotag(screen[c.screen]:tags()[curidx + 1],c)
+			--popalert("screen - " .. c.screen .. ", tag index - " .. curidx)
+			awful.client.movetotag(tags[c.screen][curidx + 1],c)
         end
-        awful.tag.viewnext(screen[c.screen])
+        awful.tag.viewnext(c.screen)
     end,
 	"Move to the next tag"),
  

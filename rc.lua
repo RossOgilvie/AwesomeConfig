@@ -41,6 +41,12 @@ do
 end
 -- }}}
 
+function popalert(err)
+	naughty.notify({ preset = naughty.config.presets.critical,
+                         title = "Alert!",
+                         text = err })
+end
+
 ---------------------------
 -- {{{ Variable definitions
 ---------------------------
