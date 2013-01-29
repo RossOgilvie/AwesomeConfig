@@ -9,7 +9,7 @@
 -- {{{ Main
 theme = {}
 theme.wallpaper_cmd = "/home/ross/.scripts/screens wallpaper"
-theme.rootdir = "/home/ross/.config/awesome/themes/ross/"
+theme.rootdir = "/home/ross/.config/awesome/ross/theme/"
 -- }}}
 
 -- {{{ Styles

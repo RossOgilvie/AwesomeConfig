@@ -12,9 +12,6 @@ beautiful = require("beautiful")
 naughty = require("naughty")
 -- Widgets Extra Library
 vicious = require("vicious")
---eminent = require("eminent")
---custom tasklist
---ross.widget.tasklist = require("ross.widget.tasklist")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -51,7 +48,7 @@ end
 -- {{{ Variable definitions
 ---------------------------
 -- Themes define colours, icons, and wallpapers
-beautiful.init("/home/ross/.config/awesome/themes/ross/theme.lua")
+beautiful.init("/home/ross/.config/awesome/ross/theme/theme.lua")
 -- {{{ Variable definitions
 home = os.getenv("HOME")
 exec = awful.util.spawn
