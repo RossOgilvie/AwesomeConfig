@@ -12,6 +12,13 @@ mymainmenu = awful.menu({ items = {
                         })
 -- }}}
 
+-- {{{{{
+-- Fix notification defaults
+-- }}}}}
+naughty.config.presets.normal.bg = '#0F0F0F'
+naughty.config.presets.low.bg = '#0F0F0F'
+naughty.config.presets.critical.bg = '#0F0F0F'
+
 ---- Volume Widget
 volumecfg = {}
 volumecfg.cardid  = 0
