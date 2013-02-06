@@ -8,7 +8,7 @@
 
 -- {{{ Main
 theme = {}
-theme.wallpaper_cmd = "/home/ross/.scripts/screens wallpaper"
+theme.wallpaper_cmd = "/home/ross/.scripts/screens"
 theme.rootdir = "/home/ross/.config/awesome/ross/theme/"
 -- }}}
 

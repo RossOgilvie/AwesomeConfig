@@ -124,10 +124,10 @@ awful.key({ modkey, "Control" }, "Down", function (c) awful.client.restore() end
 
 -- Q -- Quit app
 awful.key({ modkey,           }, "q", function (c) c:kill() end,
-	"Quit program"),
+	"Quit program")
 -- +r -- Redraw window
-awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw() end,
-	"Redraw Window")
+--awful.key({ modkey, "Shift"   }, "r",      function (c) c:redraw() end,
+	--"Redraw Window")
 )
 
 -- Compute the maximum number of digit we need, limited to 9
