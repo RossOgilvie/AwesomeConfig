@@ -6,7 +6,7 @@ mymainmenu = awful.menu({ items = {
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart awm", awesome.restart },
    { "quit", awesome.quit },
-   { "restart", terminal .. " -e reboot"},
+   { "restart", "systemctl reboot"},
    { "shutdown", "systemctl poweroff"}
                                   }
                         })
@@ -26,7 +26,7 @@ volumecfg.channel = "Master"
 local muted = false
 volumecfg.widget = wibox.widget.textbox()
 volumecfg.widget:set_align("right")
--- command must start with a space!
+ --command must start with a space!
 volumecfg.mixercommand = function (command)
        local fd = io.popen("amixer -c " .. volumecfg.cardid .. command)
        if(fd ~= nil) then volumecfg.widget.text = "??" end
@@ -68,6 +68,7 @@ volumecfg.widget:buttons(awful.util.table.join(
        awful.button({ }, 4, function () volumecfg.up() end),
        awful.button({ }, 5, function () volumecfg.down() end),
        awful.button({ }, 1, function () volumecfg.toggle() end)
+       --awful.button({ }, 3, function () os.execute("pavucontrol") end)
 ))
 volumecfg.update()
 
