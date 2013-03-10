@@ -22,53 +22,50 @@ naughty.config.presets.critical.bg = '#0F0F0F'
 ---- Volume Widget
 volumecfg = {}
 volumecfg.cardid  = 0
-volumecfg.channel = "Master"
-local muted = false
+volumecfg.muted = false
+volumecfg.vol = 100
 volumecfg.widget = wibox.widget.textbox()
 volumecfg.widget:set_align("right")
  --command must start with a space!
-volumecfg.mixercommand = function (command)
-       local fd = io.popen("amixer -c " .. volumecfg.cardid .. command)
+volumecfg.mixercommand = function (command, param)
+       local fd = io.popen("pactl " .. command .. " " .. volumecfg.cardid .. " -- " .. param)
+       fd:close()
+end
+volumecfg.update = function ()
+       local fd = io.popen("pacmd list-sinks")
        if(fd ~= nil) then volumecfg.widget.text = "??" end
        local status = fd:read("*all")
        fd:close()
        local volume = string.match(status, "(%d?%d?%d)%%")
        volume = "♫" .. string.format("% 3d", volume)
-       status = string.match(status, "%[(o[^%]]*)%]")
-       if string.find(status, "on", 1, true) then
-               --volume = volume .. "%"
-               muted = false
+       muted_line = string.match(status, "muted: ...")
+       muted_status = string.match(muted_line, "yes")
+       if muted_status == nil then
+               volumecfg.muted = false
        else   
                volume = volume .. "M"
-               muted = true
+               volumecfg.muted = true
        end
        volumecfg.widget:set_text(volume)
 end
-volumecfg.update = function ()
-       volumecfg.mixercommand(" sget " .. volumecfg.channel)
-end
 volumecfg.up = function ()
-       volumecfg.mixercommand(" sset " .. volumecfg.channel .. " 5%+")
+       volumecfg.mixercommand("set-sink-volume", "+5%")
 end
 volumecfg.down = function ()
-       volumecfg.mixercommand(" sset " .. volumecfg.channel .. " 5%-")
+       volumecfg.mixercommand("set-sink-volume", "-5%")
 end
 volumecfg.toggle = function ()
-       if muted then
-       volumecfg.mixercommand(" sset " .. volumecfg.channel .. " unmute")
-       volumecfg.mixercommand(" set " .. "Headphone" .. " unmute")
-       volumecfg.mixercommand(" set " .. "Speaker" .. " unmute")
+       if volumecfg.muted then
+       volumecfg.mixercommand("set-sink-mute","0")
        else
-       volumecfg.mixercommand(" sset " .. volumecfg.channel .. " mute")
-       volumecfg.mixercommand(" set " .. "Headphone" .. " mute")
-       volumecfg.mixercommand(" set " .. "Speaker" .. " mute")
+       volumecfg.mixercommand("set-sink-mute","1")
        end
 end
 volumecfg.widget:buttons(awful.util.table.join(
        awful.button({ }, 4, function () volumecfg.up() end),
        awful.button({ }, 5, function () volumecfg.down() end),
-       awful.button({ }, 1, function () volumecfg.toggle() end)
-       --awful.button({ }, 3, function () os.execute("pavucontrol") end)
+       awful.button({ }, 1, function () volumecfg.toggle() end),
+       awful.button({ }, 2, function () awful.util.spawn_with_shell("pavucontrol") end)
 ))
 volumecfg.update()
 
