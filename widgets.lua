@@ -30,6 +30,7 @@ volumecfg.widget:set_align("right")
 volumecfg.mixercommand = function (command, param)
        local fd = io.popen("pactl " .. command .. " " .. volumecfg.cardid .. " -- " .. param)
        fd:close()
+       volumecfg.update()
 end
 volumecfg.update = function ()
        local fd = io.popen("pacmd list-sinks")
