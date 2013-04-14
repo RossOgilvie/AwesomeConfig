@@ -61,8 +61,11 @@ function batclosure (adapter)
         local postfix = ""
         local battery, dir = get_bat_state(adapter)
         if dir == -1 then
+			-- DISCHARGING
             --prefix = prefix .. "↓"
             --prefix = "Bat:"
+
+            --show notifaction when crossing a threshold
             if battery <= nextlim then
                 naughty.notify({title = "⚡ Beware! ⚡",
                             text = "Battery charge is low ( ⚡ "..battery.."%)!",
@@ -72,17 +75,24 @@ function batclosure (adapter)
                             bg = "#3F3F3F"
                             })
                 nextlim = getnextlim(battery)
+
+			-- low bettery signal
+			if battery < 15 then
+				postfix = "!"
+			end
             end
         elseif dir == 1 then
+			-- CHARGING
             --prefix = prefix .. "↑"
             nextlim = limits[1][1]
         elseif dir == 2 then
+			-- CHARGED
             postfix = "⚡"
+        elseif dir == 0 then
+			-- UNKNOWN STATE
+			battery = "??"
         end
 
-		if battery < 15 then
-			postfix = "!"
-		end
         
         return " "..prefix..battery..postfix.." "
     end
