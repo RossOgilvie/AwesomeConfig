@@ -33,7 +33,7 @@ function get_bat_state (adapter)
         dir = 2
      else
 		dir = 0
-        battery = ""
+        battery = -1
     end
     return battery, dir
 end
@@ -61,7 +61,7 @@ function batclosure (adapter)
         local postfix = ""
         local battery, dir = get_bat_state(adapter)
         if dir == -1 then
-            prefix = prefix .. "↓"
+            --prefix = prefix .. "↓"
             --prefix = "Bat:"
             if battery <= nextlim then
                 naughty.notify({title = "⚡ Beware! ⚡",
@@ -74,11 +74,16 @@ function batclosure (adapter)
                 nextlim = getnextlim(battery)
             end
         elseif dir == 1 then
-            prefix = prefix .. "↑"
+            --prefix = prefix .. "↑"
             nextlim = limits[1][1]
         elseif dir == 2 then
             postfix = "⚡"
         end
+
+		if battery < 15 then
+			postfix = "!"
+		end
+        
         return " "..prefix..battery..postfix.." "
     end
 end
