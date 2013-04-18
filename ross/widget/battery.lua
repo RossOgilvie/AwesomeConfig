@@ -33,7 +33,7 @@ function get_bat_state (adapter)
         dir = 2
      else
 		dir = 0
-        battery = -1
+        battery = ""
     end
     return battery, dir
 end
@@ -90,7 +90,7 @@ function batclosure (adapter)
             postfix = "⚡"
         elseif dir == 0 then
 			-- UNKNOWN STATE
-			battery = "??"
+			prefix = prefix .. "??"
         end
 
         

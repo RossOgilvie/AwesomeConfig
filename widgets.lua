@@ -92,7 +92,7 @@ batterywidget = wibox.widget.textbox()
 batterywidget:set_align("right")
 
 bat_clo = battery.batclosure("BAT1")
-batterywidget.text = bat_clo()
+batterywidget:set_text(bat_clo())
 battimer = timer({ timeout = 30 })
 battimer:connect_signal("timeout", function() batterywidget:set_text(bat_clo()) end)
 battimer:start()
@@ -117,14 +117,14 @@ wifi.callback = function(widget, args)
   wifi.link = args["{link}"]
 
   if wifi.link == 0 then
-	local fdevice = io.popen("grep dhcpcd /etc/resolv.conf | awk '{print $6}'")
-	local device = fdevice:read()
-	fdevice:close()
-	if device == "eth0" then
-		widget:set_image(beautiful.wired)
-	else
-		widget:set_image(beautiful.wifi_none)
-	end
+  	local fdevice = io.popen("ip link | grep 'eth0.*UP'")
+  	local device = fdevice:read()
+  	fdevice:close()
+  	if device ~= "" then
+  		widget:set_image(beautiful.wired)
+  	else
+  		widget:set_image(beautiful.wifi_none)
+  	end
   elseif wifi.link < 21 then
     widget:set_image(beautiful.wifi_weak)
   elseif wifi.link < 51 then
@@ -162,6 +162,22 @@ therm = {
 vicious.register(therm.widget, therm.vicious, therm.format == nil and therm.callback or therm.format, therm.timeout, therm.args)
 --awful.widget.layout.margins[therm.widget] = therm.margins
 
+-- LOCATION
+loc_widget = {}
+loc_widget.widget = wibox.widget.textbox()
+loc_widget.locate = function() 
+  local location_file = io.open("/home/ross/.location")
+  local location_text = location_file:read()
+  location_file:close()
+  return " ⌖ " .. location_text .. " "
+end
+
+loc_widget.widget:set_align("right")
+loc_widget.widget:set_text(loc_widget.locate())
+
+loc_widget.timer = timer({ timeout = 30 })
+loc_widget.timer:connect_signal("timeout", function() loc_widget.widget:set_text(loc_widget.locate()) end)
+loc_widget.timer:start()
 
  -- {{{ Wibox
 -- A Widget box, this is the bar across the top of the screen.
@@ -221,6 +237,7 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(loc_widget.widget)
     right_layout:add(wifi.widget)
     right_layout:add(volumecfg.widget)
     right_layout:add(batterywidget)
