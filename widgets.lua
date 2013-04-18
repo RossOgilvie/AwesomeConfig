@@ -101,10 +101,7 @@ battimer:start()
 -- WIFI
 wifi =
 {
-	widget = wibox.widget.imagebox(),
-	margins = { left = 4, right = 4 },
-	resize = false,
-	vicious = vicious.widgets.wifi,
+	widget = wibox.widget.textbox(),
 	args = "wlan0",
 	timeout = 7,
 	ssid = "N/A",
@@ -112,54 +109,46 @@ wifi =
 	link = 0
 }
 wifi.callback = function(widget, args)
+  widget:set_text("la")
   wifi.ssid = args["{ssid}"]
   wifi.rate = args["{rate}"]
   wifi.link = args["{link}"]
+  local text = ""
 
   if wifi.link == 0 then
   	local fdevice = io.popen("ip link | grep 'eth0.*UP'")
   	local device = fdevice:read()
   	fdevice:close()
+
   	if device ~= "" then
-  		widget:set_image(beautiful.wired)
-  	else
-  		widget:set_image(beautiful.wifi_none)
+      text = "eth0"
+    else
+  		text = "d/c"
   	end
-  elseif wifi.link < 21 then
-    widget:set_image(beautiful.wifi_weak)
-  elseif wifi.link < 51 then
-    widget:set_image(beautiful.wifi_ok)
-  elseif wifi.link < 91 then
-    widget:set_image(beautiful.wifi_good)
   else
-    widget:set_image(beautiful.wifi_excellent)
+    text = wifi.link
   end
-end
-wifi.widget:buttons(awful.util.table.join( awful.button({ }, 1, 
-	function () awful.util.spawn_with_shell("lxterminal -e wicd-curses") end)
-))
-wifi.tooltip = function()
-  vicious.force({ wifi.widget })
-  return wifi.ssid .. " " .. wifi.rate .. "Mb/s " .. wifi.link .. "%"
+  return " ⇅ " .. text .. " "
 end
 
-vicious.register(wifi.widget, wifi.vicious,
-                     wifi.format == nil and wifi.callback or wifi.format,
-                     wifi.timeout, wifi.args)
---awful.widget.layout.margins[wifi.widget] = wifi.margins
-awful.tooltip({ objects = { wifi.widget }, timer_function = wifi.tooltip })
+vicious.register(wifi.widget, vicious.widgets.wifi, wifi.callback, wifi.timeout, wifi.args)
+
+-- wifi.tooltip = function()
+--   vicious.force({ wifi.widget })
+--   return wifi.ssid .. " " .. wifi.rate .. "Mb/s " .. wifi.link .. "%"
+-- end
+-- awful.tooltip({ objects = { wifi.widget }, timer_function = wifi.tooltip })
 
 -- TEMP
 therm = {
 	widget = wibox.widget.textbox(),
 	margins = { left = 4, right = 4 },
-	vicious = vicious.widgets.thermal,
 	args = "thermal_zone0",
 	format = "# $1°",
 	timeout = 67
 }
 
-vicious.register(therm.widget, therm.vicious, therm.format == nil and therm.callback or therm.format, therm.timeout, therm.args)
+vicious.register(therm.widget, vicious.widgets.thermal, therm.format, therm.timeout, therm.args)
 --awful.widget.layout.margins[therm.widget] = therm.margins
 
 -- LOCATION
