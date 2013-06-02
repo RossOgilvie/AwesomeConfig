@@ -94,6 +94,6 @@ function batclosure (adapter)
         end
 
         
-        return " "..prefix..battery..postfix.." "
+        return " "..prefix.." "..battery..postfix.." "
     end
 end

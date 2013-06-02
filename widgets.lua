@@ -19,7 +19,9 @@ naughty.config.presets.normal.bg = '#0F0F0F'
 naughty.config.presets.low.bg = '#0F0F0F'
 naughty.config.presets.critical.bg = '#0F0F0F'
 
+----------
 ---- Volume Widget
+----------
 volumecfg = {}
 volumecfg.cardid  = 0
 volumecfg.muted = false
@@ -34,7 +36,8 @@ volumecfg.mixercommand = function (command, param)
 end
 volumecfg.update = function ()
        local fd = io.popen("pacmd list-sinks")
-       if(fd ~= nil) then volumecfg.widget.text = "??" end
+       if(fd ~= nil) then volumecfg.widget.text = "??"
+       else
        local status = fd:read("*all")
        fd:close()
        local volume = string.match(status, "(%d?%d?%d)%%")
@@ -48,6 +51,7 @@ volumecfg.update = function ()
                volumecfg.muted = true
        end
        volumecfg.widget:set_text(volume)
+       end
 end
 volumecfg.up = function ()
        volumecfg.mixercommand("set-sink-volume", "+5%")
@@ -98,15 +102,17 @@ battimer:connect_signal("timeout", function() batterywidget:set_text(bat_clo()) 
 battimer:start()
 
 
+----------
 -- WIFI
+----------
 wifi =
 {
-	widget = wibox.widget.textbox(),
-	args = "wlan0",
-	timeout = 7,
-	ssid = "N/A",
-	rate = 0,
-	link = 0
+  widget = wibox.widget.textbox(),
+  args = "wlan0",
+  timeout = 37,
+  ssid = "N/A",
+  rate = 0,
+  link = 0
 }
 wifi.callback = function(widget, args)
   widget:set_text("la")
@@ -116,15 +122,15 @@ wifi.callback = function(widget, args)
   local text = ""
 
   if wifi.link == 0 then
-  	local fdevice = io.popen("ip link | grep 'eth0.*UP'")
-  	local device = fdevice:read()
-  	fdevice:close()
+    local fdevice = io.popen("ip link | grep 'eth0.*state UP'")
+    local device = fdevice:read()
+    fdevice:close()
 
-  	if device ~= "" then
-      text = "eth0"
+    if device == nil then
+      text = "d/c"
     else
-  		text = "d/c"
-  	end
+      text = "eth0"
+    end
   else
     text = wifi.link
   end
@@ -133,25 +139,28 @@ end
 
 vicious.register(wifi.widget, vicious.widgets.wifi, wifi.callback, wifi.timeout, wifi.args)
 
--- wifi.tooltip = function()
---   vicious.force({ wifi.widget })
---   return wifi.ssid .. " " .. wifi.rate .. "Mb/s " .. wifi.link .. "%"
--- end
--- awful.tooltip({ objects = { wifi.widget }, timer_function = wifi.tooltip })
+wifi.tooltip = function()
+  vicious.force({ wifi.widget })
+  return wifi.ssid .. " " .. wifi.rate .. "Mb/s " .. wifi.link .. "%"
+end
+awful.tooltip({ objects = { wifi.widget }, timer_function = wifi.tooltip })
 
+----------
 -- TEMP
+----------
 therm = {
-	widget = wibox.widget.textbox(),
-	margins = { left = 4, right = 4 },
-	args = "thermal_zone0",
-	format = "# $1°",
-	timeout = 67
+  widget = wibox.widget.textbox(),
+  margins = { left = 4, right = 4 },
+  args = "thermal_zone0",
+  format = "# $1°",
+  timeout = 67
 }
 
 vicious.register(therm.widget, vicious.widgets.thermal, therm.format, therm.timeout, therm.args)
---awful.widget.layout.margins[therm.widget] = therm.margins
 
+----------
 -- LOCATION
+----------
 loc_widget = {}
 loc_widget.widget = wibox.widget.textbox()
 loc_widget.locate = function() 
