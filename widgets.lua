@@ -24,8 +24,8 @@ naughty.config.presets.critical.bg = '#0F0F0F'
 ----------
 volumecfg = {}
 volumecfg.cardid  = 0
-volumecfg.muted = false
-volumecfg.vol = 100
+-- volumecfg.muted = false
+-- volumecfg.vol = 100
 volumecfg.widget = wibox.widget.textbox()
 volumecfg.widget:set_align("right")
  --command must start with a space!
@@ -36,21 +36,22 @@ volumecfg.mixercommand = function (command, param)
 end
 volumecfg.update = function ()
        local fd = io.popen("pacmd list-sinks")
-       if(fd ~= nil) then volumecfg.widget.text = "??"
+       if(not fd) --if fd is nil, this will be true
+        then volumecfg.widget:set_text("♫ ??")
        else
-       local status = fd:read("*all")
-       fd:close()
-       local volume = string.match(status, "(%d?%d?%d)%%")
-       volume = "♫" .. string.format("% 3d", volume)
-       muted_line = string.match(status, "muted: ...")
-       muted_status = string.match(muted_line, "yes")
-       if muted_status == nil then
-               volumecfg.muted = false
-       else   
-               volume = volume .. "M"
-               volumecfg.muted = true
-       end
-       volumecfg.widget:set_text(volume)
+         local status = fd:read("*all")
+         fd:close()
+         local volume = string.match(status, "(%d?%d?%d)%%")
+         volume = "♫" .. string.format("% 3d", volume)
+         muted_line = string.match(status, "muted: ...")
+         muted_status = string.match(muted_line, "yes")
+         if muted_status == nil then
+                 volumecfg.muted = false
+         else   
+                 volume = volume .. "M"
+                 volumecfg.muted = true
+         end
+         volumecfg.widget:set_text(volume)
        end
 end
 volumecfg.up = function ()
